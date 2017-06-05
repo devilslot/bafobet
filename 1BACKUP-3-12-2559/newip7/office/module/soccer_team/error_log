@@ -1,0 +1,2 @@
+[10-Jun-2016 15:19:39 Asia/Bangkok] PHP Warning:  mysql_fetch_object(): supplied argument is not a valid MySQL result resource in /home/bafobet/public_html/office/module/soccer_team/soccer_team.class.php on line 45
+[10-Jun-2016 15:19:39 Asia/Bangkok] PHP Warning:  mysql_fetch_assoc() expects parameter 1 to be resource, boolean given in /home/bafobet/public_html/office/module/soccer_team/soccer_team.class.php on line 104

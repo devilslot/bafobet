@@ -1,0 +1,9 @@
+<script src="../plugin/plupload/src/javascript/jquery.plupload.queue/jquery.plupload.queue.js"></script>
+<script src="../plugin/plupload/src/javascript/plupload.js"></script>
+<script src="../plugin/plupload/src/javascript/plupload.gears.js"></script>
+<script src="../plugin/plupload/src/javascript/plupload.silverlight.js"></script>
+<script src="../plugin/plupload/src/javascript/plupload.flash.js"></script>
+<script src="../plugin/plupload/src/javascript/plupload.browserplus.js"></script>
+<script src="../plugin/plupload/src/javascript/plupload.html4.js"></script>
+<script src="../plugin/plupload/src/javascript/plupload.html5.js"></script>
+<script src="../plugin/plupload/js/i18n/th.js"></script>

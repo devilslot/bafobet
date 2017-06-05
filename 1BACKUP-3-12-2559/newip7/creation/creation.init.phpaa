@@ -1,0 +1,149 @@
+<?php
+/*================================================*\
+*  Author : Attaphon Wongbuatong
+*  Created Date : 05/12/2013 09:09
+*  Module : Class
+*  Description : Backoffice Class
+*  Involve People : MangEak
+*  Last Updated : 05/12/2013 09:09
+\*================================================*/
+
+require_once "service/service.php";
+require_once "main/main.class.php";
+require_once "creation/creation.class.php";
+require_once "creation/module/content/content.class.php";
+
+// if(empty($_SESSION['LANG'])){
+//   $lang = 'th';
+//   $_SESSION['LANG'] = 'th';
+// }else{
+//   $lang = $_SESSION['LANG'];
+// }
+function DisplayLeague($name){
+	$sql="
+	SELECT
+	sname
+	FROM
+	soccer_league
+	WHERE
+	ename = '$name'
+	";
+//		echo $sql;
+	$result=array();
+	$query=mysql_query($sql) or die(mysql_error());
+	if($row=mysql_fetch_object($query)){
+		$sname=$row->sname;
+	}
+	mysql_free_result($query);
+
+	return $sname;
+}
+
+function CheckColor($name){
+	$sql="
+	SELECT
+	color
+	FROM
+	soccer_league
+	WHERE
+	sname = '$name'
+	";
+//		echo $sql;
+	$result=array();
+	$query=mysql_query($sql) or die(mysql_error());
+	if($row=mysql_fetch_object($query)){
+		$color=$row->color;
+	}
+	mysql_free_result($query);
+	if(empty($color)){
+	$color = dechex(crc32($name));
+  	$color = substr($color, 0, 6);
+	}
+	return $color;
+}
+
+function DisplayUser($id){
+	$sql="
+	SELECT
+	username
+	FROM
+	members
+	WHERE
+	code = '$id'
+	";
+//		echo $sql;
+	$result=array();
+	$query=mysql_query($sql) or die(mysql_error());
+	if($row=mysql_fetch_object($query)){
+		$username=$row->username;
+	}
+	mysql_free_result($query);
+
+	return $username;
+}
+
+
+
+function RandomColor(){
+	$rand = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
+	$color = '#'.$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)];
+
+	return $color;
+
+}
+
+
+function checkHDC($matchID){
+	$sql="
+	SELECT
+	count(code) AS  cnt
+	FROM
+	matchHDC
+	WHERE
+	MatchID = '$matchID'
+	";
+//		echo $sql;
+	$result=array();
+	$query=mysql_query($sql) or die(mysql_error());
+	if($row=mysql_fetch_object($query)){
+		$cnt=$row->cnt;
+	}
+	mysql_free_result($query);
+
+	return $cnt;
+}
+
+function ReCheckHDC($hdc){
+	$sql="
+	SELECT
+	count(code) AS  cnt
+	FROM
+	hdc_setting
+	WHERE
+	hdc = '$hdc'
+	";
+//		echo $sql;
+	$result=array();
+	$query=mysql_query($sql) or die(mysql_error());
+	if($row=mysql_fetch_object($query)){
+		$cnt=$row->cnt;
+	}
+	mysql_free_result($query);
+	if($cnt == 0){
+		return false;
+	}else{
+		return true;
+	}
+
+	
+}
+
+
+
+$ojc = new clsContent();
+
+// $content = $ojc->LoadContent($lang);
+// $text = $ojc->LoadLanguage($lang);
+$config = $ojc->LoadConfig();
+//PrintR($text);
+?>

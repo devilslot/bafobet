@@ -1,0 +1,14 @@
+/*================================================*\
+*  Author : BoyBangkhla
+*  Created Date : 24/01/2015 09:09
+*  Module : Style
+*  Description : Backoffice Style sheet
+*  Involve People : MangEak
+*  Last Updated : 24/01/2015 09:09
+\*================================================*/
+@charset "utf-8";
+
+.pinfile{color:#cccccc;}
+.pinfile:hover{color:#005C9C;}
+
+.filebody{background:url(../../../images/loading.gif) no-repeat center;}

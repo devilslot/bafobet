@@ -1,0 +1,123 @@
+@charset "utf-8";
+/*==================================================
+*  Author : Tirapant Tongpann
+*  Created Date : 28/03/2012 22:00
+*  Module : 
+*  Description : 
+*  Involve People : -
+*  Last Updated : 28/03/2012 22:00
+==================================================*/
+.clear{clear:both;}
+
+.num{text-align:right; padding-right:40%;}
+.num2{text-align:right; padding-right:40%;}
+.dpk, .dtpk, .tpk{text-align:center;}
+.txtstatus{background-color:transparent !important; color:#005C9C; border:0 !important; padding:0; margin:0; width:100%; text-align:center; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;}
+
+
+#modelpic_img{background:url(img/redirect.gif) no-repeat 15px 15px;}
+
+
+.navbar .navbar-brand small img{
+	width:40px;
+	height:40px;
+}
+
+.loading-container{
+	opacity: 0.4;
+	filter: alpha(opacity=40);
+}		
+.navbar .navbar-inner .navbar-header .navbar-account .account-area>li .dropdown-menu.dropdown-login-area>li.theme-area .colorpicker{
+	padding:10px 3px;
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #FFFFE1 !important;
+}
+
+@media only screen 
+  and (-webkit-max-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+		.btn-mobile {
+			width:100% !important;
+			display: inline-block !important;
+			margin:5px !important;
+		}
+		.modal:before {
+			display: inline-block;
+			vertical-align: middle;
+			content: " ";
+			height: 100%;
+		}
+		table#tblView,thead#thView,tbody#tbView { 
+		display: block; 
+		padding: 0px;
+	}
+	
+	/* Hide table headers (but not display: none;, for accessibility) */
+	#thView tr  { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	
+	
+	#tbView tr { border: 1px solid #ccc;display: block;  }
+	
+	#tbView td { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+/*		padding-left: 50%; */
+		width:100%;
+		vertical-align : middle;
+		text-align : center !important;	
+		display: block; 
+	}
+	
+	#tbView td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 50% !important; 
+		text-align:left !important;
+		padding-right: 10px; 
+		white-space: nowrap;
+		display: block; 
+	}
+	
+/*		td:nth-last-child(1) { 
+		 Now like a table header 
+		position: absolute;
+		 Top/left values mimic padding 
+		top: 6px;
+		left: 6px;
+		text-align:left !important;
+		padding: 10px; 
+		width: 0px;
+		padding-top: 6px !important;
+		padding-bottom: 6px !important;
+		white-space: nowrap;
+
+	}*/
+	
+	.table>tbody#tbView>tr>td {
+	 padding: 5px !important;
+	 min-height:30px !important;
+	 word-break: break-all !important;
+	}
+	/*
+	Label the data
+	*/
+		
+}
+
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: middle;
+    border-top: 1px solid #ddd;
+}

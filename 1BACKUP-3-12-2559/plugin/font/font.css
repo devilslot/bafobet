@@ -1,0 +1,42 @@
+/*================================================*\
+*  Author : BoyBangkhla
+*  Created Date : 05/12/2013 09:09
+*  Module : Style
+*  Description : Backoffice Style sheet
+*  Involve People : MangEak
+*  Last Updated : 05/12/2013 09:09
+\*================================================*/
+@charset "utf-8";
+
+@font-face {
+	font-family:pretty;
+	src: url('SukhumvitReg.eot');
+	src: local('SukhumvitReg'), url('SukhumvitReg.eot?') format('embedded-opentype'),
+			 local('SukhumvitReg'), url('SukhumvitReg.woff') format('woff'),
+			 local('SukhumvitReg'), url('SukhumvitReg.ttf') format('truetype'),
+			 local('SukhumvitReg'), url('SukhumvitReg.svg#SukhumvitRegular') format('svg');
+	 font-weight: normal;
+	 font-style: normal;
+}
+@font-face {
+	font-family:prettybold;
+	src: url('SukhumvitBold.eot');
+	src: local('SukhumvitBold'), url('SukhumvitBold.eot?') format('embedded-opentype'),
+			 local('SukhumvitBold'), url('SukhumvitBold.woff') format('woff'),
+			 local('SukhumvitBold'), url('SukhumvitBold.ttf') format('truetype'),
+			 local('SukhumvitBold'), url('SukhumvitBold.svg#SukhumvitBold') format('svg');
+	 font-weight: normal;
+	 font-style: normal;
+}
+@font-face {
+	font-family: 'rsu';
+	src: url('rsu_regular-webfont.eot');
+	src: url('rsu_regular-webfont.eot?#iefix') format('embedded-opentype'),
+			 url('rsu_regular-webfont.woff2') format('woff2'),
+			 url('rsu_regular-webfont.woff') format('woff'),
+			 url('rsu_regular-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {font-family: "tsn"; src: url(ThaiSansNeue-Italic.ttf);}

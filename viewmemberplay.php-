@@ -1,0 +1,51 @@
+<?php include ('header.inc.php');?>
+<!--<div class="style29" style="width:240px; float:left;">
+<?php //include ('left.php');?>
+</div>-->
+
+
+<?
+if(empty($_GET['dateMatch'])){
+  $date= date('Y-m-d');
+  //$dateminus1= strtotime('-1 day', date('Y-m-d'));
+}else{
+  $date = $_GET['dateMatch'];
+}
+
+
+if($_POST['gtype']=='point'){
+$sqltype = " AND gametype='point' ";
+}else if($_POST['gtype']=='rank'){
+$sqltype = " AND gametype='rank' ";
+}else{
+$sqltype = " ";
+}
+
+if($_POST['year']!=''){ $yearp=$_POST['year']; }else{ $yearp=$date_year; }
+
+if($_POST['month']!=''){ $monthp=$_POST['month']; }else{ $monthp=$date_mon; }
+?>
+<style type="text/css">
+<!--
+.style68 {font-size: 12px; font-family: Tahoma; color: #CCCCCC; }
+-->
+</style>
+<script language="javascript">
+
+function selec(){
+  var ab=document.getElementById('se');
+  location.href=ab.value;
+}
+</script>
+
+<center><h2>หน้านี้อยู่ระหว่างการปรับปรุง</h2></center>
+      </div>
+                </table>
+                <br />
+            </td>
+          </tr>
+        </table>
+
+      </div>
+      
+    <?php  include('footer.inc.php');?>

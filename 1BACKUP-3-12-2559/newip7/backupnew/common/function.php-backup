@@ -1,0 +1,3214 @@
+<?php
+
+session_start();
+
+require('database.class.php');
+
+set_time_limit(0);
+
+	$added = time();
+	$id = $_COOKIE["PID"];
+	$usern = $_COOKIE["PUSERNAME"];
+	$sql1 = "select * from personnel where id = '".$id."' and username = '".$usern."'";
+	$result1 = $conn->query($sql1);
+	$ps = $result1->fetch_assoc();
+$status=array();
+
+	
+
+
+if(isset($_POST['onecheck'])){
+
+	if(($_COOKIE['PCLASS']=='Account')or($_COOKIE['PCLASS']=='Admin')or($checkbank=='Y')){
+	############## DEPOSIT ###################
+
+	$dpcount=0;
+	$cont = '';
+	#old
+	//$sql = "select * from deposit where status = 'pending'";
+	#New
+	$sql = "select * from deposit where status = 'pending' order by added desc";
+	$result = $conn->query($sql);
+	
+	$statusmun = $result->num_rows;
+	
+		if ($statusmun > 0) {
+
+			//$statusmun = $result->num_rows;
+
+		while($row = $result->fetch_assoc()) {
+			
+			$id = $row['id'];
+
+				$sql2 = "select * from member where id = '".$row['owner']."' limit 1";
+
+				$result2 = $conn->query($sql2);
+
+				$getrow = $result2->fetch_assoc();
+
+
+
+				$cont = '<a href="javascript:;" onClick="depositadmin(\'conf\',\''.$row['id'].'\')" class="btn btn-success btn-xs" title="ยืนยัน">ยืนยัน</a>
+
+				<a href="javascript:;" onClick="depositadmin(\'cancel\',\''.$row['id'].'\')" class="btn btn-danger btn-xs" title="ยกเลิก">ยกเลิก</a>';
+
+			$tabledp .= '
+
+			<tr id="depositid_'.$row['id'].'">
+
+				<td>'.$getrow['name'].'</td>
+
+				<td>'.$getrow['username'].' ('.strtoupper($row['gameuser']).')</td>
+
+				<td>ธนาคาร '.$row['bank'].'</td>
+
+				
+
+				<td>'.$row['amount'].'</td>
+
+				<td>'.$row['times'].' </td>
+
+				<td>'.$row['q'].' </td>
+
+				<td>
+
+					'.$cont.'
+
+				</td>
+
+			</tr>	';
+
+			$dpcount++;
+
+		}
+
+	} else {
+
+		$tabledp = "<tr><td colspan='8' class='text-center'>ยังไม่มีรายการ</td></tr>";
+
+	}
+
+	$status['dpcount'] = $dpcount;
+
+	$status['dptable'] = $tabledp;
+
+	
+
+	############## DEPOSIT ###################
+
+		$oldid = $_SESSION['oldid'];
+
+		$_SESSION['oldid'] = $id;
+
+		$status['oldid'] = $oldid;
+
+		$status['pid'] = $id;
+				
+
+		$status['status'] = "1";
+
+		$status['statusmun'] = $statusmun;
+	}
+		echo json_encode($status);
+
+		exit();
+
+}
+
+
+
+
+if(isset($_POST['withcheck'])){
+	if(($_COOKIE['PCLASS']=='Account')or($_COOKIE['PCLASS']=='Admin')or($withdrawal=='Y')){
+	$statusmun = 0;
+	
+	$sql1 = "select id from paylogs where status = 'pending' AND types='withdrawal' AND withdrawal='confirmed' order by id desc limit 50";
+	$result1 = $conn->query($sql1);
+	$statusmun = $result1->num_rows;
+	//echo $sql1;
+	
+	//$sql2 = "select * from paylogs where status = 'pending' AND types='withdrawal' order by id desc limit 1";
+	//$result2 = $conn->query($sql2);
+	
+	while($row2 = $result1->fetch_assoc()){
+	
+		
+        $oldid = $row2['id'];
+	
+		$oldid = $_SESSION['woldid'];
+		$_SESSION['woldid'] = $row2['id'];
+	
+	
+	$status['pid'] = $row2['id'];
+	
+	}
+		
+		//$status['sqll'] = $sql1."|".$result9->num_rows;
+		$status['oldid'] = $oldid;	
+		$status['status'] = "1";
+		$status['statusmun'] = $statusmun;
+	}
+		echo json_encode($status);
+		exit();
+
+}
+
+
+if(isset($_POST['acheck'])){
+	$statusmun = 0;
+	
+	$sql1 = "select id from paylogs where status='pending' AND withdrawal='pending' AND ($sqlre) order by id asc limit 50";
+	$result1 = $conn->query($sql1);
+	$statusmun = $result1->num_rows;
+	//echo $sql1;
+	
+	$sql2 = "select id from paylogs where status='pending' AND withdrawal='pending' AND ($sqlre) order by id desc limit 1";
+	$result2 = $conn->query($sql2);
+	
+	while($row2 = $result2->fetch_assoc()){
+	
+		
+        $oldid = $row2['id'];
+	
+		$oldid = $_SESSION['aoldid'];
+		$_SESSION['aoldid'] = $row2['id'];
+	
+	
+	$status['pid'] = $row2['id'];
+	
+	}
+		
+		//$status['sqll'] = $sql1;
+		$status['oldid'] = $oldid;	
+		$status['status'] = "1";
+		$status['statusmun'] = $statusmun;
+		echo json_encode($status);
+		exit();
+}
+
+
+
+
+if(isset($_POST['sendaddorder'])){
+
+	$gameuser = strtolower(trim($_POST['gameid']));
+
+	$amount = 0 + str_replace(",","",trim($_POST['amount']));
+
+	$type = trim($_POST['type']);
+
+	$bank = trim($_POST['bank']);
+
+	$q = ' '.trim($_POST['q']);
+
+
+
+	if(empty($type)){
+
+			$status['msg'] = 'โปรดเลือกรูปแบบ';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();
+
+	}
+
+
+
+	if(empty($bank)){
+
+			$status['msg'] = 'โปรดเลือกธนาคาร';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();
+
+	}
+
+
+
+	if(empty($q)){
+
+			$status['msg'] = 'โปรดใส่หมายเหตุ';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();
+
+	}
+
+
+
+	if($amount <= 0){
+
+			$status['msg'] = 'โปรดระบุยอดเงิน';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();
+
+	}
+
+
+
+	
+
+	$sql = "select * from gameusers where LOWER(gameuser) = '$gameuser'";
+
+	$result = $conn->query($sql);
+
+	$ck = $result->fetch_assoc();
+
+
+
+	if($ck){
+
+		$owner = $ck['owner'];
+
+		$gameuser = $ck['gameuser'];
+
+		
+
+		
+
+		$sql2 = "select * from member where id = '$owner'";
+
+		$result2 = $conn->query($sql2);
+
+		$member = $result2->fetch_assoc();
+
+
+
+		$name = $member['name'];
+
+		$username = $member['username'];
+
+
+		$time = $q;
+
+			$rowid = $conn->query("INSERT INTO deposit (owner,name,gameuser,username,bank,added,times,amount,q) VALUES ('$owner','$name','$gameuser','$username','$bank','$added','$time','$amount','$type.$q')");
+
+			if($rowid){
+
+				$status['status'] = "1";
+
+				$status['msg'] = "รายการฝากเงินได้รับการบันทึกเรียบร้อย";
+
+				echo json_encode($status);
+
+				exit();
+
+			}
+
+	}else{
+
+			$status['msg'] = 'ไม่พบบัญชีเกมส์นี้ในระบบ';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();
+
+
+
+	}
+
+}
+
+
+
+if(isset($_POST['depositadmin'])){
+
+	$id = $_POST['uid'];
+
+	$statuss = $_POST['status'];
+
+	$q = trim($_POST['qq']);
+
+	
+
+	
+
+	
+
+	$sql = "select * from deposit where id = $id";
+
+	$result = $conn->query($sql);
+
+	$row = $result->fetch_assoc();
+
+
+
+	$am = $row['amount'];
+	$mbtimes = str_replace('/','-',$row['times']);
+	$mbtimes2 = str_replace((date('Y')+543),date('Y'),$mbtimes);
+	$timestampp = strtotime($mbtimes2);
+
+
+
+
+
+	$sql2 = "select * from member where id = '".$row['owner']."'";
+
+	$result2 = $conn->query($sql2);
+
+	$member = $result2->fetch_assoc();
+
+
+
+	$added = time();
+
+	if($row['status'] == 'pending'){
+
+		if($statuss == 'conf'){
+
+			#insert paylogs
+
+			$sql3 = "INSERT INTO paylogs (owner, name, username,phone,types,froms,tos,amount,status,added2,added,added3,sure,toporder,q,personnel) VALUES ('".$member['id']."','".$member['name']."','".$member['username']."','".$member['phone']."','deposit','B:".$row['bank']."','".$row['gameuser']."','".$am."','pending','".$timestampp."','".$row['added']."','".$added."','1','".$row['id']."','".$q."','".$ps['name']."')";
+
+			$conn->query($sql3);
+
+
+
+			#update deposit
+
+			$conn->query("update deposit set status = 'confirmed' where id = $id");
+
+
+
+		}else{
+
+			$sql3 = "INSERT INTO paylogs (owner, name, username,phone,types,froms,tos,amount,status,added2,added,added3,sure,toporder,status,q,personnel) VALUES ('".$member['id']."','".$member['name']."','".$member['username']."','".$member['phone']."','deposit','B:".$row['bank']."','".$row['gameuser']."','".$am."','pending','".$timestampp."','".$row['added']."','".$added."','1','".$row['id']."','cancle','$q','".$ps['name']."')";
+
+			$conn->query($sql3);
+
+			
+
+			$conn->query("update deposit set status = 'cancle' where id = $id");
+
+		}
+
+		$status['status'] = "1";
+
+		//$status['status'] = $sql3;
+
+		echo json_encode($status);	
+
+	}
+
+}
+
+
+
+
+
+if(isset($_POST['depok'])){
+
+			
+			
+
+	if(!$ps){
+
+			$status['msg'] = 'ล๊อคอินเข้างานใหม่อีกครั้ง';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();	
+
+
+
+	}
+
+	$oid = 0 + $_POST['oid'];
+
+	$depbef = 0 + str_replace(",","",trim($_POST['depbef']));
+
+	$depaft = 0 + str_replace(",","",trim($_POST['depaft']));
+
+	if($depaft == 0){
+
+		$status['status'] = 0;
+
+		$status['msg'] = 'โปรดระบุยอดหลังทำ';
+
+		echo json_encode($status);
+
+		exit();			
+
+	}
+
+	
+
+	$sql2 = "select * from paylogs where id = $oid";
+
+	$result2 = $conn->query($sql2);
+
+	
+
+	$row = $result2->fetch_assoc();
+
+	$amount = $row['amount'];
+
+	$member = $row['owner'];
+
+	$gameuser = $row['tos'];
+
+
+
+	
+
+	$sql3 = "select * from gameusers where gameuser = '".str_replace("W88:","",$gameuser)."'";
+
+	$result3 = $conn->query($sql3);
+
+	
+
+	$resx = $result3->fetch_assoc();
+
+	
+
+				if($resx['provider'] == 'GCLUB' or $resx['provider'] == 'TBSBET' or $resx['provider'] == 'ASIA855' or $resx['provider'] == 'ROYAL1688' or $resx['provider'] == 'W88'){
+
+					if(($depbef - $amount) != $depaft){
+
+						$status['status'] = 0;
+
+						$status['msg'] = 'โปรดตรวจสอบยอดหลังทำอีกครั้งเนื่องจากยอดไม่ถูกต้อง '.$depaft.'-';
+
+						echo json_encode($status);
+
+						exit();	
+
+					}
+
+				}else{	
+
+					if(($depbef + $amount) != $depaft){
+
+						$status['status'] = 0;
+
+						$status['msg'] = 'โปรดตรวจสอบยอดหลังทำอีกครั้งเนื่องจากยอดไม่ถูกต้อง +';
+
+						echo json_encode($status);
+
+						exit();	
+
+					}
+
+				}
+
+	
+
+	$conn->query("update paylogs set status = 'confirmed', dep_bef = '$depbef', dep_aft = '$depaft', personnel = '".$ps['name']."', added4 = '".time()."' where id = ".$oid."");
+
+	
+
+	if($resx['provider'] == 'GCLUB' or $resx['provider'] == 'TBSBET' or $resx['provider'] == 'ASIA855' or $resx['provider'] == 'ROYAL1688' or $resx['provider'] == 'W88'){
+
+					
+
+					$sql4 = "select * from agent where provider in ('GCLUB','TBSBET','ASIA855','ROYAL1688','W88')";
+
+	$result4 = $conn->query($sql4);
+
+	
+
+	while( $rowgz = $result4->fetch_assoc()){
+
+					
+
+						if(preg_match("#".strtolower($rowgz['name'])."#",strtolower($gameuser))){
+
+							$conn->query("update agent set credit = '$depaft' where id = '".$rowgz['id']."'");
+
+						}
+
+					}
+
+	}else{
+
+		$conn->query("update gameusers set credit = '$depaft' where gameuser = '$gameuser' AND owner = $member");
+
+	}				
+
+		$status['status'] = 1;
+
+		echo json_encode($status);
+
+		exit();	
+
+}
+
+
+
+if(isset($_POST['Depcancel'])){
+
+	
+
+	if(!$ps){
+
+			$status['msg'] = 'ล๊อคอินเข้างานใหม่อีกครั้ง';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();	
+
+
+
+	}	
+
+	$oid = 0 + $_POST['oid'];
+
+	$q=trim($_POST['qq']);
+
+	$sql2 = "select * from paylogs where id = $oid";
+
+	$result2 = $conn->query($sql2);
+
+	
+
+	$row = $result2->fetch_assoc();
+
+	
+
+	$toporder = $row['toporder'];
+
+	$res = $conn->query("update deposit set status = 'cancle' where id = '$toporder'");
+
+	$conn->query("update paylogs set status = 'cancle', q = '$q', personnel = '".$ps['name']."', added = '".time()."' where id = ".$oid."");
+
+		$status['status'] = 1;
+
+		echo json_encode($status);
+
+		exit();	
+
+}
+
+
+
+
+
+
+
+if(isset($_POST['TFFcheck'])){
+
+	$oid = 0 + $_POST['oid'];
+
+	$tffbef = 0 + str_replace(",","",trim($_POST['tffbef']));
+
+	$tffaft = 0 + str_replace(",","",trim($_POST['tffaft']));
+
+	$tfftnf = 0 + str_replace(",","",trim($_POST['tfftnf']));
+
+
+
+	
+
+	$sql1 = "select * from paylogs where id = '$oid' and transfrom = 'pending'";
+
+	$result1 = $conn->query($sql1);
+
+	
+
+	$row = $result1->fetch_assoc();
+
+	
+
+	$member = $row['owner'];
+
+	$gameuser = $row['froms'];
+
+	$amount = $row['amount'];
+
+	
+
+			
+
+			$sql2 = "select * from gameusers where gameuser = '".str_replace("W88:","",$gameuser)."'";
+
+	$result2 = $conn->query($sql2);
+
+	
+
+	$resx = $result2->fetch_assoc();
+
+				if($resx['provider'] == 'GCLUB' or $resx['provider'] == 'TBSBET' or $resx['provider'] == 'ASIA855' or $resx['provider'] == 'ROYAL1688' or $resx['provider'] == 'W88'){
+
+					if(($tffbef + $amount) != $tffaft){
+
+						$status['status'] = 0;
+
+						$status['msg'] = 'โปรดตรวจสอบยอดหลังทำอีกครั้งเนื่องจากยอดไม่ถูกต้อง +=';
+
+						echo json_encode($status);
+
+						exit();
+
+					}
+
+				}else{
+
+					if((($tffbef + $tfftnf) - $amount) != $tffaft){
+
+						$status['status'] = 0;
+
+						$status['msg'] = 'โปรดตรวจสอบยอดหลังทำอีกครั้งเนื่องจากยอดไม่ถูกต้อง+-= '.$amount.'';
+
+						echo json_encode($status);
+
+						exit();	
+
+					}
+
+				}	
+
+	
+
+	if($row){
+
+	
+
+	$conn->query("update paylogs set transfrom = 'confirmed', wd_bef = '$tffbef', wd_aft = '$tffaft', wd_trf = '$tfftnf' where id = ".$oid."");
+
+		if($resx['provider'] == 'GCLUB' or $resx['provider'] == 'TBSBET' or $resx['provider'] == 'ASIA855' or $resx['provider'] == 'ROYAL1688' or $resx['provider'] == 'W88'){
+
+						
+
+						$sql4 = "select * from agent where provider in ('GCLUB','TBSBET','ASIA855','ROYAL1688','W88')";
+
+	$result4 = $conn->query($sql4);
+
+	
+
+	while( $rowgz = $result4->fetch_assoc()){
+
+					
+
+						
+
+							if(preg_match("#".strtolower($rowgz['name'])."#",strtolower($gameuser))){
+
+								$conn->query("update agent set credit = '$tffaft' where id = '".$rowgz['id']."'");
+
+							}
+
+						}		
+
+		}else{
+
+			$conn->query("update gameusers set credit = '$tffaft' where gameuser = '$gameuser' AND owner = $member");
+
+		}
+
+		$status['status'] = 1;
+
+		echo json_encode($status);
+
+		exit();	
+
+	}else{
+
+		$status['status'] = 0;
+
+		$status['msg'] = 'รายการนี้ได้รับการยืนยันเป็นที่เรียบร้อยแล้ว';
+
+		echo json_encode($status);
+
+		exit();	
+
+	}
+
+}
+
+
+
+
+
+
+
+if(isset($_POST['TFTcheck'])){
+
+	$oid = 0 + $_POST['oid'];
+
+	$tftbef = 0 + str_replace(",","",trim($_POST['tftbef']));
+
+	$tftaft = 0 + str_replace(",","",trim($_POST['tftaft']));
+
+
+
+	
+
+	$sql1 = "select * from paylogs where id = $oid";
+
+	$result1 = $conn->query($sql1);
+
+	
+
+	$row = $result1->fetch_assoc();
+
+	if($row['transfrom'] == 'pending'){
+
+		$status['status'] = 0;
+
+		$status['msg'] = 'โปรดทำรายการและยืนยันยอดถอนให้เรียบร้อยก่อน';
+
+		echo json_encode($status);
+
+		exit();	
+
+	}
+
+	$amount = $row['amount'];
+
+	$member = $row['owner'];
+
+	$gameuser = $row['tos'];
+
+
+
+	
+
+	$sql2 = "select * from gameusers where gameuser = '".str_replace("W88:","",$gameuser)."'";
+
+	$result2 = $conn->query($sql2);
+
+	
+
+	$resx = $result2->fetch_assoc();
+
+				if($resx['provider'] == 'GCLUB' or $resx['provider'] == 'TBSBET' or $resx['provider'] == 'ASIA855' or $resx['provider'] == 'ROYAL1688' or $resx['provider'] == 'W88'){
+
+					if(($tftbef - $amount) != $tftaft){
+
+						$status['status'] = 0;
+
+						$status['msg'] = 'โปรดตรวจสอบยอดหลังทำอีกครั้งเนื่องจากยอดไม่ถูกต้อง '.$tftbef.'-'.$amount.' -';
+
+						echo json_encode($status);
+
+						exit();	
+
+					}
+
+				}else{	
+
+					if(($tftbef + $amount) != $tftaft){
+
+						$status['status'] = 0;
+
+						$status['msg'] = 'โปรดตรวจสอบยอดหลังทำอีกครั้งเนื่องจากยอดไม่ถูกต้อง +';
+
+						echo json_encode($status);
+
+						exit();	
+
+					}
+
+				}	
+
+	
+
+	$sql3 = "select * from paylogs where id = '$oid' and transto = 'pending'";
+
+	$result3 = $conn->query($sql3);
+
+	
+
+	$rowz = $result3->fetch_assoc();
+
+	if($rowz){	
+
+		
+
+		$conn->query("update paylogs set transto = 'confirmed', dep_bef = '$tftbef', dep_aft = '$tftaft' where id = ".$oid."");
+
+		
+
+		
+
+		if($resx['provider'] == 'GCLUB' or $resx['provider'] == 'TBSBET' or $resx['provider'] == 'ASIA855' or $resx['provider'] == 'ROYAL1688' or $resx['provider'] == 'W88'){
+
+						
+
+						$sql4 = "select * from agent where provider in ('GCLUB','TBSBET','ASIA855','ROYAL1688','W88')";
+
+	$result4 = $conn->query($sql4);
+
+	
+
+	while( $rowgz = $result4->fetch_assoc()){
+
+						
+
+							if(preg_match("#".strtolower($rowgz['name'])."#",strtolower($gameuser))){
+
+								$conn->query("update agent set credit = '$tftaft' where id = '".$rowgz['id']."'");
+
+							}
+
+						}
+
+		}else{
+
+							$conn->query("update gameusers set credit = '$tftaft' where gameuser = '$gameuser' AND owner = $member");
+
+						}
+
+		
+
+		$status['status'] = 1;
+
+		echo json_encode($status);
+
+		exit();	
+
+	}else{
+
+		$status['status'] = 0;
+
+		$status['msg'] = 'รายการนี้ได้รับการยืนยันเป็นที่เรียบร้อยแล้ว';
+
+		echo json_encode($status);
+
+		exit();	
+
+	}		
+
+}
+
+
+
+
+
+if(isset($_POST['TFok'])){
+
+	
+
+	if(!$ps){
+
+			$status['msg'] = 'ล๊อคอินเข้างานใหม่อีกครั้ง';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();	
+
+
+
+	}	
+
+	$oid = 0 + $_POST['oid'];
+
+	
+
+			$sql2 = "select * from paylogs where id = '$oid' and (transto = 'pending' or transfrom = 'pending')";
+
+			$result2 = $conn->query($sql2);
+
+	
+
+			$row = $result2->fetch_assoc();
+
+	if($row){
+
+		$status['status'] = 0;
+
+		$status['msg'] = 'โปรดยืนยันการทำรายการ ถอนและเติมเงิน บัญชีเกมส์ ให้เรียบร้อยก่อน';
+
+		echo json_encode($status);
+
+		exit();		
+
+	}
+
+	
+
+	$conn->query("update paylogs set status = 'confirmed', personnel = '".$ps['name']."', added = '".time()."' where id = ".$oid."");
+
+		$status['status'] = 1;
+
+		echo json_encode($status);
+
+		exit();	
+
+}
+
+
+
+
+
+if(isset($_POST['WDcheck'])){
+
+	$oid = 0 + $_POST['oid'];
+
+	$wdbef = 0 + str_replace(",","",trim($_POST['wdbef']));
+
+	$wdaft = 0 + str_replace(",","",trim($_POST['wdaft']));	
+
+	$wdtnf = 0 + str_replace(",","",trim($_POST['wdtnf']));
+
+	
+
+	
+
+			$sql1 = "select * from paylogs where id = $oid";
+
+			$result1 = $conn->query($sql1);
+
+	
+
+			$row = $result1->fetch_assoc();
+
+			
+
+	$member = $row['owner'];
+
+	$gameuser = $row['froms'];
+
+	$amount = $row['amount'];
+
+			
+
+			$sql2 = "select * from gameusers where gameuser = '".str_replace("W88:","",$row['froms'])."'";
+
+			$result2 = $conn->query($sql2);
+
+	
+
+			$resx = $result2->fetch_assoc();
+
+				if($resx['provider'] == 'GCLUB' or $resx['provider'] == 'TBSBET' or $resx['provider'] == 'ASIA855' or $resx['provider'] == 'ROYAL1688' or $resx['provider'] == 'W88'){
+
+					if(($wdbef + $row['amount']) != $wdaft){
+
+						$status['status'] = 0;
+
+						$status['msg'] = 'โปรดตรวจสอบยอดหลังทำอีกครั้งเนื่องจากยอดไม่ถูกต้อง #'.($wdbef + $row['amount']);
+
+						echo json_encode($status);
+
+						exit();	
+
+					}
+
+				}else{
+
+					if((($wdbef + $wdtnf) - $amount) != $wdaft){
+
+						$status['status'] = 0;
+
+						$status['msg'] = 'โปรดตรวจสอบยอดหลังทำอีกครั้งเนื่องจากยอดไม่ถูกต้อง';
+
+						echo json_encode($status);
+
+						exit();	
+
+					}
+
+				}	
+
+	
+
+	
+
+			$sql3 = "select * from paylogs where id = '$oid' and withdrawal = 'pending'";
+
+			$result3 = $conn->query($sql3);
+
+	
+
+			$rowz = $result3->fetch_assoc();
+
+	if($rowz){
+
+	
+
+	$conn->query("update paylogs set withdrawal = 'confirmed', wd_bef = '$wdbef', wd_aft = '$wdaft', wd_trf = '$wdtnf' where id = ".$oid."");
+
+	if($resx['provider'] == 'GCLUB' or $resx['provider'] == 'TBSBET' or $resx['provider'] == 'ASIA855' or $resx['provider'] == 'ROYAL1688' or $resx['provider'] == 'W88'){
+
+					$sql4 = "select * from agent where provider in ('GCLUB','TBSBET','ASIA855','ROYAL1688','W88')";
+
+	$result4 = $conn->query($sql4);
+
+	
+
+	while( $rowgz = $result4->fetch_assoc()){
+
+						if(preg_match("#".strtolower($rowgz['name'])."#",strtolower($row['froms']))){
+
+							$conn->query("update agent set credit = '$wdaft' where id = '".$rowgz['id']."'");
+
+						}
+
+					}		
+
+	}else{
+
+		$conn->query("update gameusers set credit = '$wdaft' where gameuser = '$gameuser' AND owner = $member");
+
+	}
+
+		$status['status'] = 1;
+
+		echo json_encode($status);
+
+		exit();	
+
+	}else{
+
+		$status['status'] = 0;
+
+		$status['msg'] = 'รายการนี้ได้รับการยืนยันเป็นที่เรียบร้อยแล้ว';
+
+		echo json_encode($status);
+
+		exit();	
+
+	}
+
+}
+
+
+
+
+
+if(isset($_POST['WDok'])){
+
+
+	if(!$ps){
+
+			$status['msg'] = 'ล๊อคอินเข้างานใหม่อีกครั้ง';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();	
+
+
+
+	}	
+
+	$oid = 0 + $_POST['oid'];
+
+	$frombank = trim($_POST['frombank']);
+
+	$q = trim($_POST['qq']);
+
+	
+
+	$sql2 = "select * from paylogs where id = '$oid' and withdrawal = 'pending'";
+
+			$result2 = $conn->query($sql2);
+
+	
+
+			$row = $result2->fetch_assoc();
+
+	if($row){
+
+		$status['status'] = 0;
+
+		$status['msg'] = 'โปรดยืนยันการทำรายการ ถอนเงินจาก บัญชีเกมส์ ให้เรียบร้อยก่อน';
+
+		echo json_encode($status);
+
+		exit();		
+
+	}
+
+	
+
+	$conn->query("update paylogs set status = 'confirmed', frombank = '$frombank', q = '$q', personnel = '".$ps['name']."', added = '".time()."' where id = ".$oid."");
+
+		$status['status'] = 1;
+
+		echo json_encode($status);
+
+		exit();	
+
+}
+
+
+
+if(isset($_POST['WDcancel'])){
+
+	
+
+	if(!$ps){
+
+			$status['msg'] = 'ล๊อคอินเข้างานใหม่อีกครั้ง';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();	
+
+
+
+	}	
+
+	$oid = 0 + $_POST['oid']; 
+
+	
+
+	$conn->query("update paylogs set status = 'cancle', personnel = '".$ps['name']."', added = '".time()."' where id = ".$oid."");
+
+		$status['status'] = 1;
+
+		echo json_encode($status);
+
+		exit();	
+
+}
+
+
+
+if(isset($_POST['Depcancel'])){
+
+	
+
+	if(!$ps){
+
+			$status['msg'] = 'ล๊อคอินเข้างานใหม่อีกครั้ง';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();	
+
+
+
+	}	
+
+	$oid = 0 + $_POST['oid'];
+
+	$q=trim($_POST['qq']);
+
+	$sql2 = "select * from paylogs where id = '$oid'";
+
+			$result2 = $conn->query($sql2);
+
+	
+
+			$row = $result2->fetch_assoc();
+
+	$toporder = $row['toporder'];
+
+	$res = $db->query("update deposit set status = 'cancle' where id = '$toporder'");
+
+	
+
+	$conn->query("update paylogs set status = 'cancle', q = '$q', personnel = '".$ps['name']."', added = '".time()."' where id = ".$oid."");
+
+		$status['status'] = 1;
+
+		echo json_encode($status);
+
+		exit();	
+
+}
+
+
+
+
+
+
+
+#เริ่ม รอทำรายการ เปิดบัญชีใหม่#
+
+if(isset($_POST['savenewgameusr'])){
+
+	$gameusr = trim($_POST['gameusr']);
+
+	$oid = 0 + $_POST['oid'];
+
+	
+
+	$sql1 = "select * from paylogs where id = '$oid'";
+
+	$result1 = $conn->query($sql1);
+
+	$row = $result1->fetch_assoc();
+
+	
+
+	$gp = explode(":",$row['tos']);
+
+	$provider = $gp[1];
+
+	$owner = $row['owner'];
+
+	$name = $row['name'];
+
+	$username = $row['username'];
+
+	$phone = $row['phone'];
+
+
+
+	if($gameusr == ''){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "โปรดระบุบัญชีเกมส์";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+
+
+	
+
+	$sql2 = "select * from gameusers where gameuser = '$gameusr' AND owner != '$owner'";
+
+	$result2 = $conn->query($sql2);
+
+	$ck = $result2->fetch_assoc();
+
+	
+
+	if($ck){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "บัญชีเกมส์นี้ มีอยู่ในระบบ แล้ว";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+	
+
+	
+
+	$sql3 = "select * from gameusers where gameuser = '$gameusr' AND owner = '$owner'";
+
+	$result3 = $conn->query($sql3);
+
+	$ckz = $result3->fetch_assoc();
+
+	
+
+	if($ckz){
+
+		
+
+		$conn->query("update paylogs set tos = '$gameusr' where id = ".$oid."");
+
+		$status['status'] = "1";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+
+
+	$rowid = $conn->query("INSERT INTO gameusers (owner, gameuser, provider, added) VALUES ('$owner','$gameusr','$provider','".time()."')");
+
+	if($rowid){
+
+		$conn->query("update paylogs set tos = '$gameusr' where id = ".$oid."");
+
+		$status['status'] = "1";
+
+		echo json_encode($status);
+
+		exit();
+
+	}else{
+
+		$status['status'] = "0";
+
+		$status['msg'] = "เกิดข้อผิดพลาดโปรดลองใหม่อีกครั้ง";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+}
+
+#จบ รอทำรายการ เปิดบัญชีใหม่#
+
+
+
+
+
+if(isset($_POST['sendaddgameuser'])){
+
+	$mid = 0 + $_POST['mid'];
+
+	$gameprovider = $_POST['provider'];
+
+	$gameuser = $_POST['gameuser'];
+
+	
+
+	
+
+	$sql2 = "select * from gameusers where gameuser = '$gameuser'";
+
+	$result2 = $conn->query($sql2);
+
+	$ck = $result2->fetch_assoc();
+
+	
+
+	if($ck){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "บัญชีเกมส์นี้ มีอยู่ในระบบ แล้ว";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+	
+
+	if(empty($gameprovider)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "โปรดเลือกค่ายเกมส์";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+	
+
+	if(empty($gameuser)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "โปรดระบุบัญชีเกมส์";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+	
+
+	if(empty($mid)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ไม่สามารถทำรายการได้ ลองรีเฟชร หน้านี้ แล้วลองใหม่อีกครั้ง";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+	
+
+	$rowid = $conn->query("INSERT INTO gameusers (owner, gameuser,provider,added) VALUES ('$mid','$gameuser','$gameprovider','".time()."')");
+
+	if($rowid){
+
+		$status['status'] = "1";
+
+		$status['msg'] = "เพิ่มบัญชีเกมส์ลูกค้าใหม่เรียบร้อย";
+
+		echo json_encode($status);
+
+		exit();
+
+	}	
+
+}
+
+
+
+
+
+if(isset($_POST['sendchcredit'])){
+
+	$chcredit = str_replace(",","",trim($_POST['chcredit']));
+
+	$chcreditid = trim($_POST['chcreditid']);
+
+	$chcredittype = trim($_POST['chcredittype']);
+
+	$chcreditstyle = trim($_POST['chcreditstyle']);
+
+	$chcreditbefore = 0 + str_replace(",","",trim($_POST['chcreditbefore']));
+
+	$chcreditq = trim($_POST['chcreditq']);
+
+	
+
+	
+
+	if(!$ps){
+
+			$status['msg'] = 'ล๊อคอินเข้างานใหม่อีกครั้ง';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();	
+
+
+
+	}	
+
+	
+
+	if($chcredit == 0){
+
+			$status['msg'] = 'โปรดระบุยอดที่ทำรายการด้วย';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();
+
+	}
+
+	if(empty($chcreditid) or empty($chcredittype) or empty($chcreditstyle)){
+
+			$status['msg'] = 'ข้อมูลถูกส่งมาไม่ครบลองรีเฟชรหน้าแล้วทำรายการใหม่';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();
+
+	}
+
+	
+
+	
+
+	$sql2 = "select * from agent where id = '$chcreditid'";
+
+	$result2 = $conn->query($sql2);
+
+	
+
+	$row = $result2->fetch_assoc();
+
+	if(!$row){
+
+			$status['msg'] = 'ข้อมูลถูกส่งมาไม่ครบลองรีเฟชรหน้าแล้วทำรายการใหม่';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();
+
+	}
+
+	
+
+	$agentname = $row['name'];
+
+	$provider = $row['provider'];
+
+	$rowid = $conn->query("INSERT INTO agentlogs (name,provider,credit,beforecredit,tables,types,added,personnel,q) VALUES ('$agentname','$provider','$chcredit','$chcreditbefore','$chcreditstyle','$chcredittype','".time()."','".$ps['name']."','$chcreditq')");
+
+	if($rowid){
+
+		if($chcredittype == 'plus'){
+
+			$conn->query("update agent set $chcreditstyle = $chcreditstyle + $chcredit, updates = '".time()."' where id = '$chcreditid'");
+
+		}else{
+
+			$conn->query("update agent set $chcreditstyle = $chcreditstyle - $chcredit, updates = '".time()."' where id = '$chcreditid'");
+
+		}	
+
+		$status['status'] = "1";
+
+		$status['msg'] = "ทำรายการเรียบร้อย";
+
+		echo json_encode($status);
+
+		exit();
+
+	}else{
+
+			$status['msg'] = 'ไม่สามารถทำรายการได้ โปรดลองใหม่อีกครั้ง';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();
+
+	}	
+
+}
+
+
+
+
+
+
+
+if(isset($_POST['sendaddagent'])){
+
+	$provider = trim($_POST['provider']);
+
+	$agnetid = trim($_POST['agnetid']);
+
+	$agentcredit = 0 + str_replace(",","",trim($_POST['agentcredit']));
+
+	$agentbalance = 0 + str_replace(",","",trim($_POST['agentbalance']));
+
+	$agenttype = trim($_POST['agenttype']);
+
+	if(empty($provider) or empty($agnetid) or empty($agenttype)){
+
+			$status['msg'] = 'โปรดระบุข้อมูลให้ครบทุกช่อง';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();
+
+	}
+
+	
+
+	$rowid = $conn->query("INSERT INTO agent (name,provider,credit,balance,types) VALUES ('$agnetid','$provider','$agentcredit','$agentbalance','$agenttype')");
+
+	if($rowid){
+
+		$status['status'] = "1";
+
+		$status['msg'] = "เพิ่มบัญชีเอเย่นใหม่เรียบร้อย";
+
+		echo json_encode($status);
+
+		exit();
+
+	}		
+
+}
+
+
+
+if(isset($_POST['TFcancel'])){
+
+	$oid = 0 + $_POST['oid'];
+
+	
+
+	$conn->query("update paylogs set status = 'cancle' where id = $oid");
+
+		$status['status'] = 1;
+
+		echo json_encode($status);
+
+		exit();	
+
+}
+
+
+
+if(isset($_POST['saveeditcredit'])){
+
+	
+
+	if(!$ps){
+
+			$status['msg'] = 'ล๊อคอินเข้างานใหม่อีกครั้ง';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();	
+
+
+
+	}
+
+	$gameid = 0 + trim($_POST['gameid']);
+
+	$credit = 0 + str_replace(",","",trim($_POST['credit']));
+
+	
+
+	$sql2 = "select * from gameusers where id = '$gameid'";
+
+	$result2 = $conn->query($sql2);
+
+	
+
+	$row = $result2->fetch_assoc();
+
+	
+
+	$oldcredit = $row['credit'];
+
+	$owner = $row['owner'];
+
+	
+
+	$sql3 = "select * from member where id = '$owner'";
+
+	$result3 = $conn->query($sql3);
+
+	
+
+	$member = $result3->fetch_assoc();
+
+	
+
+	$name = $member['name'];
+
+	$username = $row['gameuser'];
+
+	$amount = str_replace("-", "", ($oldcredit - $credit));
+
+	$q = trim($_POST['qq']);
+
+	$rowid = $conn->query("INSERT INTO paylogs (owner,name,username,phone,types,froms,tos,amount,added,status,dep_bef,dep_aft,q,personnel) VALUES ('$owner','$name','".$member['username']."','$phone','change','$username','$username','$amount','".time()."','confirmed','$oldcredit','$credit','$q','".$ps['name']."')");
+
+	if($gameid){
+
+		$res=$conn->query("update gameusers set credit = '$credit' where id = '$gameid'");
+
+		if($res){
+
+			$status['credit'] = $credit;
+
+			$status['status'] = 1;
+
+			echo json_encode($status);
+
+			exit();	
+
+		}else{
+
+			$status['msg'] = 'เกิดข้อผิดพลาดไม่สามารถอัพเดทข้อมูลได้';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();	
+
+		}
+
+	}
+
+}
+
+
+
+
+
+if(isset($_POST['saveeditcredit'])){
+
+	
+
+	if(!$ps){
+
+			$status['msg'] = 'ล๊อคอินเข้างานใหม่อีกครั้ง';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();	
+
+
+
+	}
+
+	$gameid = 0 + trim($_POST['gameid']);
+
+	$credit = 0 + str_replace(",","",trim($_POST['credit']));
+
+	
+
+	$sql1 = "select * from gameusers where id = '$gameid'";
+
+	$result1 = $conn->query($sql1);
+
+	
+
+	$row = $result1->fetch_assoc();
+
+	
+
+	$oldcredit = $row['credit'];
+
+	$owner = $row['owner'];
+
+	
+
+	$sql2 = "select * from member where id = '$owner'";
+
+	$result2 = $conn->query($sql2);
+
+	
+
+	$member = $result2->fetch_assoc();
+
+	$name = $member['name'];
+
+	$username = $row['gameuser'];
+
+	$amount = str_replace("-", "", ($oldcredit - $credit));
+
+	$q = trim($_POST['qq']);
+
+	$rowid = $conn->query("INSERT INTO paylogs (owner,name,username,phone,types,froms,tos,amount,added,status,dep_bef,dep_aft,q,personnel) VALUES ('$owner','$name','".$member['username']."','$phone','change','$username','$username','$amount','".time()."','confirmed','$oldcredit','$credit','$q','".$ps['name']."')");
+
+	if($gameid){
+
+		$res=$conn->query("update gameusers set credit = '$credit' where id = '$gameid'");
+
+		if($res){
+
+			$status['credit'] = $credit;
+
+			$status['status'] = 1;
+
+			echo json_encode($status);
+
+			exit();	
+
+		}else{
+
+			$status['msg'] = 'เกิดข้อผิดพลาดไม่สามารถอัพเดทข้อมูลได้';
+
+			$status['status'] = 0;
+
+			echo json_encode($status);
+
+			exit();	
+
+		}
+
+	}
+
+}
+
+
+
+
+
+if(isset($_POST['saveeditmember'])){
+
+	$mid = 0 + $_POST['mid'];
+
+	$name = $_POST['name'];
+
+	$phone = $_POST['phone'];
+
+	$username = $_POST['username'];
+
+	$bankname = $_POST['bankname'];
+
+	$banknumber = $_POST['banknumber'];
+
+	
+
+	if(empty($name)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "โปรดระบุชื่อบัญชี";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+	
+
+	if(empty($username)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "โปรดระบุ ชื่อบัญชีเข้าใช้งาน";
+
+		echo json_encode($status);
+
+		exit();		
+
+	}
+
+	
+
+	if(empty($bankname)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "โปรดเลือกธนาคารของลูกค้า";
+
+		echo json_encode($status);
+
+		exit();		
+
+	}
+
+	
+
+
+
+	$sql2 = "select * from member where (phone = '$phone' or banknumber = '$banknumber' or username = '$username') and id != '$mid'";
+
+	$result2 = $conn->query($sql2);
+
+	
+
+	$ck = $result2->fetch_assoc();
+
+	if($ck){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "บัญชีใช้งาน เบอร์โทร หรือ เลขบัญชีธนาคารนี้ มีในระบบแล้ว";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+
+
+	$res = $conn->query("update member set name = '$name', phone = '$phone', username = '$username', bankname = '$bankname', banknumber = '$banknumber' where id = '$mid'");
+
+	if($res){
+
+		$status['status'] = "1";
+
+		$status['msg'] = "บักทึกข้อมูลใหม่เรียบร้อย";
+
+		echo json_encode($status);
+
+		exit();	
+
+	}else{
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ไม่สามารถทำรายการได้ #ข้อมูลไม่เปลี่ยน";
+
+		echo json_encode($status);
+
+		exit();		
+
+	}
+
+}
+
+
+
+
+
+
+
+if(isset($_POST['editmember'])){
+
+	$mid = 0 + $_POST['mid'];
+
+	if($mid){
+
+		
+
+		$sql2 = "select * from member where id = '$mid'";
+
+		$result2 = $conn->query($sql2);
+
+	
+
+		$row = $result2->fetch_assoc();
+
+		$data = '
+
+		  <div class="modal-header">
+
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+			<h4 class="modal-title">แก้ใขบัญชีคุณ '.$row['name'].'</h4>
+
+		  </div>
+
+		  <div class="modal-body">
+
+			<div id="saveeditmember_msg"></div>
+
+				<form class="form-horizontal">
+
+						  <div class="form-group" style="margin-top:10px;">
+
+							<label class="col-md-3 control-label" for="editname">ชื่อ - นามสกุล</label>
+
+							<div class="col-md-7"><input type="text" id="editname" name="editname" value="'.$row['name'].'" class="form-control input-small" placeholder=""></div>
+
+						  </div>	
+
+
+
+						  <div class="form-group">
+
+							<label class="col-md-3 control-label" for="editphone">เบอร์โทร</label>
+
+							<div class="col-md-4"><input type="text" id="editphone" name="editphone" value="'.$row['phone'].'" class="form-control input-small" placeholder=""></div>
+
+						  </div>	
+
+
+
+						  <div class="form-group">
+
+							<label class="col-md-3 control-label" for="editusername">บัญชีเข้าใช้งาน</label>
+
+							<div class="col-md-4"><input type="text" id="editusername" name="editusername" value="'.$row['username'].'" class="form-control input-small" placeholder=""></div>
+
+						  </div>	
+
+
+
+						  <div class="form-group">
+
+							<label class="col-md-3 control-label" for="editbankname">ธนาคารลูกค้า</label>
+
+							<div class="col-md-4">
+
+											<select id="editbankname" name="editbankname" class="form-control input-small">
+
+												<option value="">โปรดเลือก ธนาคาร</option>
+
+												<option value="กสิกรไทย">ธนาคาร กสิกรไทย</option>
+
+												<option value="ไทยพาณิชย์">ธนาคาร ไทยพาณิชย์</option>
+
+												<option value="กรุงไทย">ธนาคาร กรุงไทย</option>
+
+												<option value="กรุงเทพ">ธนาคาร กรุงเทพ</option>
+
+												<option value="กรุงศรีอยุธยา">ธนาคาร กรุงศรีอยุธยา</option>
+
+												<option value="ธนชาต">ธนาคาร ธนชาต</option>
+
+												<option value="ทหารไทย">ธนาคาร ทหารไทย</option>
+
+												<option value="ซีไอเอ็มบีไทย">ธนาคาร ซีไอเอ็มบีไทย</option>
+
+	                                            <option value="ออมสิน">ธนาคาร ออมสิน</option>
+
+	                                            <option value="LHBANK">ธนาคาร LH Bank</option>												
+
+											</select>
+
+							</div>
+
+						  </div>	
+
+						  
+
+						  <div class="form-group" style="margin-top:10px;">
+
+							<label for="editbanknumber" class="col-xs-3 col-md-3 control-label">เลขบัญชีธนาคาร</label>
+
+							<div class="col-xs-7 col-md-7"><input type="text" id="editbanknumber" name="editbanknumber" value="'.$row['banknumber'].'" maxlength="12" class="form-control input-small" data-toggle="tooltip" title="ระบุเลขบัญชีเป็นตัวเลขเท่านั้น ใช้สำหรับรับเงิน" placeholder="โปรดระบุ">
+
+							</div>
+
+						  </div>					  
+
+						  
+
+				</form>
+
+		  </div>
+
+		  <div class="modal-footer">
+
+			<button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
+
+			<button type="button" class="btn btn-primary" id="saveeditmember" onClick="saveeditmember(\''.$row['id'].'\')"><span class="glyphicon glyphicon-floppy-saved"></span> บันทึก</button>
+
+		  </div>	
+
+		';
+
+		$bank = $row['bankname'];
+
+			$status['status'] = "1";
+
+			$status['html'] = $data;
+
+			$status['bank'] = $bank;
+
+			echo json_encode($status);
+
+			exit();			
+
+	}else{
+
+			$status['status'] = "0";
+
+			$status['msg'] = "ไม่สามารถทำรายการได้ ลองรีเฟชร หน้านี้ แล้วลองใหม่อีกครั้ง";
+
+			echo json_encode($status);
+
+			exit();	
+
+	}
+
+}
+
+
+
+if(isset($_POST['sendchpass'])){
+
+	$mid = 0 + $_POST['mid'];
+
+	$chpass = $_POST['chpass'];
+
+	if(!empty($mid) AND !empty($chpass)){
+
+		$res = $conn->query("update member set password = '".MD5($chpass)."' where id = '$mid'");
+
+		if($res){
+
+			$status['status'] = "1";
+
+			$status['msg'] = "บันทึกรหัสผ่านใหม่เรียบร้อย";
+
+			echo json_encode($status);
+
+			exit();	
+
+		}else{
+
+			$status['status'] = "0";
+
+			$status['msg'] = "รหัสผ่านไม่ถูกเปลี่ยน เนื่องจาก ซ้ำของเดิม";
+
+			echo json_encode($status);
+
+			exit();	
+
+		}
+
+	}else{
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ไม่สามารถทำรายการได้ ลองรีเฟชร หน้านี้ แล้วลองใหม่อีกครั้ง";
+
+		echo json_encode($status);
+
+		exit();	
+
+	}
+
+}
+
+
+
+
+
+if(isset($_POST['sendaddq'])){
+
+	$mid = 0 + $_POST['mid'];
+
+	$q = $_POST['q'];
+
+	
+
+	if(empty($mid)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ไม่สามารถทำรายการได้ ลองรีเฟชร หน้านี้ แล้วลองใหม่อีกครั้ง";
+
+		echo json_encode($status);
+
+		exit();
+
+	}	
+
+
+
+	if(empty($q)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "โปรดระบุข้อความ";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+	
+
+	$rowid = $conn->query("INSERT INTO q (owner, q, added) VALUES ('$mid', '$q', '".time()."')");
+
+	if($rowid){
+
+		$status['status'] = "1";
+
+		$status['msg'] = "เพิ่มข้อความลูกค้าใหม่เรียบร้อย";
+
+		echo json_encode($status);
+
+		exit();
+
+	}		
+
+	
+
+}
+
+
+
+
+
+if(isset($_POST['delgameuser'])){
+
+	$mid = 0 + $_POST['mid'];
+
+	if($mid != 0){
+
+		$row = $conn->query("DELETE FROM gameusers where id = '$mid'");
+
+		if($row){
+
+			$status['status'] = "1";
+
+			echo json_encode($status);
+
+			exit();
+
+		}else{
+
+			$status['status'] = "0";
+
+			$status['msg'] = "ไม่สามารถทำรายการได้ ลองรีเฟชร หน้านี้ แล้วลองใหม่อีกครั้ง";
+
+			echo json_encode($status);
+
+			exit();					
+
+		}
+
+	}else{
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ไม่สามารถทำรายการได้ ลองรีเฟชร หน้านี้ แล้วลองใหม่อีกครั้ง";
+
+		echo json_encode($status);
+
+		exit();		
+
+	}
+
+}
+
+
+
+
+
+if(isset($_POST['delq'])){
+
+	$mid = 0 + $_POST['mid'];
+
+	if($mid != 0){
+
+		$row = $conn->query("DELETE FROM q where id = '$mid'");
+
+		if($row){
+
+			$status['status'] = "1";
+
+			echo json_encode($status);
+
+			exit();
+
+		}else{
+
+			$status['status'] = "0";
+
+			$status['msg'] = "ไม่สามารถทำรายการได้ ลองรีเฟชร หน้านี้ แล้วลองใหม่อีกครั้ง";
+
+			echo json_encode($status);
+
+			exit();					
+
+		}
+
+	}else{
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ไม่สามารถทำรายการได้ ลองรีเฟชร หน้านี้ แล้วลองใหม่อีกครั้ง";
+
+		echo json_encode($status);
+
+		exit();		
+
+	}
+
+}
+
+
+
+
+
+if(isset($_POST['delmember'])){
+
+	$mid = 0 + $_POST['mid'];
+
+	if($mid != 0){
+
+		$row = $conn->query("DELETE FROM member where id = '$mid'");
+
+		if($row){
+
+			$conn->query("DELETE FROM gameusers where owner = '$mid'");	
+
+			$status['status'] = "1";
+
+			echo json_encode($status);
+
+			exit();
+
+		}else{
+
+			$status['status'] = "0";
+
+			$status['msg'] = "ไม่สามารถทำรายการได้ ลองรีเฟชร หน้านี้ แล้วลองใหม่อีกครั้ง";
+
+			echo json_encode($status);
+
+			exit();					
+
+		}
+
+	}else{
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ไม่สามารถทำรายการได้ ลองรีเฟชร หน้านี้ แล้วลองใหม่อีกครั้ง";
+
+		echo json_encode($status);
+
+		exit();		
+
+	}
+
+}
+
+
+
+
+
+if(isset($_POST['getmemberdetail'])){
+
+	$mid = 0 + $_POST['mid'];
+
+	$data = '';
+
+	
+
+	$sql1 = "select * from gameusers where owner = '$mid'";
+
+	$result1 = $conn->query($sql1);
+
+	
+
+	if ($result1->num_rows > 0) {
+
+	
+
+		$data .= '
+
+	
+
+			<div class="col-xs-6">
+
+			<h4>บัญชีเกมส์</h4>
+
+			<table class="table table-bordered" id="editgameusertable" style="margin-top:10px;">
+
+						<tbody>
+
+						  <tr>
+
+							<td class="active">ค่าย</td>
+
+							<td class="active">บัญชีเกมส์</td>
+
+							<td class="active">เครดิตล่าสุด</td>
+
+							<td class="active">เพิ่มเมื่อ</td>
+
+							<td class="active">Action</td>
+
+						  </tr>
+
+						</tbody>
+
+						<tbody id="gameuserlist">		
+
+		';
+
+		while($x = $result1->fetch_assoc()) {
+
+			$data .= '
+
+
+
+							  <tr id="gameuser_'.$x['id'].'">
+
+								<td>'.$x['provider'].'</td>
+
+								<td><span class="label label-default">'.strtoupper($x['gameuser']).'</span></td>
+
+								<td id="td_credit_'.$x['id'].'"><span class="label label-success">'.$x['credit'].'</span> <span onclick="editcredit(\''.$x['credit'].'\',\''.$x['id'].'\')" class="glyphicon glyphicon-edit" style="cursor:pointer;"></span></td>
+
+								<td>'.date("d-m-Y H:i:s",$x['added']).'</td>
+
+								<td><a href="javascript:;" onClick="delgameuser(\''.$x['id'].'\')" class="btn btn-danger btn-xs" title="ลบ"><span class="glyphicon glyphicon-trash"></span></a></td>
+
+							  </tr>		
+
+			';
+
+		}
+
+		$data .= '
+
+							</tbody>
+
+			</table>			
+
+			</div>			
+
+		';
+
+	}
+
+	
+
+	
+
+  
+
+	$sql2 = "select * from q where owner = '$mid' order by added";
+
+	$result2 = $conn->query($sql2);
+
+	
+
+	if ($result2->num_rows > 0) {
+
+			
+
+		$data .= '
+
+			<div class="col-xs-6">
+
+			<h4>หมายเหตุ</h4>
+
+			<table class="table table-bordered" id="editqusertable" style="margin-top:10px;">
+
+						<tbody>
+
+						  <tr>
+
+							<td class="active">ข้อความ</td>
+
+							<td class="active">เพิ่มเมื่อ</td>
+
+							<td class="active">Action</td>
+
+						  </tr>
+
+						</tbody>
+
+						<tbody id="quserlist">		
+
+		';
+
+		while($x = $result2->fetch_assoc()) {
+
+			$data .= '
+
+
+
+							  <tr id="q_'.$x['id'].'">
+
+								<td>'.$x['q'].'</td>
+
+								<td>'.date("d-m-Y H:i:s",$x['added']).'</td>
+
+								<td><a href="javascript:;" onClick="delq(\''.$x['id'].'\')" class="btn btn-danger btn-xs" title="ลบ"><span class="glyphicon glyphicon-trash"></span></a></td>
+
+							  </tr>		
+
+			';
+
+		}
+
+		$data .= '
+
+							</tbody>
+
+			</table>			
+
+			</div>			
+
+		';
+
+	}
+
+	
+
+	if($data == ''){
+
+		$status['status'] = "0";
+
+		echo json_encode($status);
+
+		exit();
+
+	}else{
+
+		$status['status'] = "1";
+
+		$status['html'] = $data;
+
+		echo json_encode($status);
+
+		exit();		
+
+	}
+
+}
+
+
+
+if(isset($_POST['addpersonnelacc'])){
+
+	$name = trim($_POST['name']);
+
+	$username = trim($_POST['username']);
+
+	$password = trim($_POST['password']);
+
+	if(empty($name)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ยังไม่ระบุชื่อเล่น";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+
+
+	if(empty($username)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ยังไม่ระบุบัญชีเข้าใช้งาน";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+
+
+	if(empty($password)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ยังไม่ได้ตั้งรหัสเข้าใช้งาน";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+	$added = time();
+
+	$rowid = $conn->query("INSERT INTO personnel (name,username,password,added,classs) VALUES (
+
+			'$name',
+
+			'$username',
+
+			'$password',
+
+			'$added',
+
+			'Personnel')");
+
+	if($rowid){
+
+		$status['status'] = "1";
+
+		echo json_encode($status);
+
+		exit();
+
+	}else{
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ไม่สามารถเพิ่มบัญชีใหม่ได้";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+}
+
+if(isset($_POST['savepersonnels'])){
+
+	$id = 0 + trim($_POST['uid']);
+
+	$name = trim($_POST['name']);
+
+	$username = trim($_POST['username']);
+
+	$password = trim($_POST['password']);
+
+	if(empty($name)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ยังไม่ระบุชื่อเล่น";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+
+
+	if(empty($username)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ยังไม่ระบุบัญชีเข้าใช้งาน";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+
+
+	if(empty($password)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ยังไม่ได้ตั้งรหัสเข้าใช้งาน";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+
+
+	$rowid = $conn->query("update personnel set name = '$name', username = '$username', password = '$password' where id = $id");
+
+
+
+	if($rowid){
+
+		$status['status'] = "1";
+
+		$status['msg'] = "บันทึกการแก้ใขเรียบร้อย";
+
+		echo json_encode($status);
+
+		exit();
+
+	}else{
+
+		$status['status'] = "0";
+
+		$status['msg'] = "ไม่สามารถบันทึกบัญชีใหม่ได้";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+}
+
+
+
+if(isset($_POST['delpersonnel'])){
+
+	$id = 0 + trim($_POST['uid']);
+
+	
+	$sql = "select * from personnel where id = $id";
+	$result = $conn->query($sql);
+	$row = $result->fetch_assoc();
+	if($row){
+
+		$s = $conn->query("DELETE FROM personnel where id = $id");
+
+		if($s){
+
+				$status['status'] = "1";
+
+				echo json_encode($status);
+
+				exit();
+
+		}else{
+
+				$status['status'] = "0";
+
+				$status['msg'] = 'เกิดข้อผิดพลาดไม่สามารถลบ รายการนี้ได้';
+
+				echo json_encode($status);
+
+				exit();
+
+		}
+
+	}else{
+
+				$status['status'] = "0";
+
+				$status['msg'] = 'ไม่พบบีญชีใช้งานนี้';
+
+				echo json_encode($status);
+
+				exit();
+
+	}
+
+}
+
+
+
+
+
+if(isset($_POST['editpersonnel'])){
+
+	$id = 0 + trim($_POST['uid']);
+
+	
+	$sql = "select * from personnel where id = $id";
+	$result = $conn->query($sql);
+	$row = $result->fetch_assoc();
+
+		$detail = '
+
+				  <div class="modal-header">
+
+					<h4><span class="glyphicon glyphicon-pencil"></span> แก้ใขบัญชีพนักงาน</h4>
+
+				  </div>
+
+				  <div class="modal-body">
+
+						<div id="personnel_msg"></div>
+
+
+
+						<form class="form-horizontal">
+
+
+
+						  <div class="form-group">
+
+							<label class="col-md-4 control-label" for="username">ชื่อเล่น</label>
+
+							<div class="col-md-7">
+
+							  <input type="text" class="form-control input-small" id="personnelname" value="'.$row['name'].'" placeholder="ระบุ ชื่อเล่น พนักงาน" required>
+
+							</div>
+
+						  </div>
+
+
+
+						  <div class="form-group">
+
+							<label class="col-md-4 control-label" for="username">ชื่อบัญชี</label>
+
+							<div class="col-md-7">
+
+							  <input type="text" class="form-control input-small" id="personnelusername" value="'.$row['username'].'" placeholder="ระบุ ชื่อบัญชี พนักงาน" required>
+
+							</div>
+
+						  </div>
+
+
+
+						  <div class="form-group">
+
+							<label class="col-md-4 control-label" for="inputPassword">รหัสผ่านบัญชี พนักงาน</label>
+
+							<div class="col-md-7">
+
+							  <input type="password" class="form-control input-small" id="personnelpassword" value="'.$row['password'].'" placeholder="ระบุ รหัสผ่านบัญชี พนักงาน" required>
+
+							</div>
+
+						  </div>
+
+						</form>
+
+
+
+				  </div>
+
+				  <div class="modal-footer">
+
+					<a href="#" class="btn btn-default btn-small" data-dismiss="modal" aria-hidden="true">Close</a>
+
+					<a href="#" class="btn btn-primary btn-small" onClick="savepersonnels(\''.$row['id'].'\')">บันทึกแก้ใข</a>
+
+				  </div>
+
+		';
+
+		$status['status'] = "1";
+
+		$status['html'] = $detail;
+
+		echo json_encode($status);
+
+		exit();
+
+}
+
+
+if(isset($_POST['sendnewtmid'])){
+
+	$tmid = trim($_POST['tmid']);
+
+	$key = trim($_POST['keys']);
+
+	if(empty($tmid) or empty($key)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "โปรดระบุข้อมูลให้ครบถ้วน";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+		$rowid = $conn->query("INSERT INTO tmtopup (tmid, keyz) VALUES ('$tmid', '$key')");
+
+		if($rowid){
+
+			$status['status'] = "1";
+
+			$status['msg'] = "บันทึกบัญชี TMTopup เรียบร้อย";
+
+			echo json_encode($status);
+
+			exit();
+
+		}else{
+
+			$status['status'] = "0";
+
+			$status['msg'] = "ไม่สามารถบันทึกข้อมูลได้";
+
+			echo json_encode($status);
+
+			exit();
+
+		}
+
+}
+
+
+if(isset($_POST['deltmtopup'])){
+
+	$tmid = trim($_POST['tmid']);
+
+	
+	$sql = "select * from tmtopup where id = $tmid";
+	$result = $conn->query($sql);
+	$row = $result->fetch_assoc();
+	if($row){
+
+		$s = $conn->query("DELETE FROM tmtopup where id = $tmid");
+
+		if($s){
+
+				$status['status'] = "1";
+
+				echo json_encode($status);
+
+				exit();
+
+		}else{
+
+				$status['status'] = "0";
+
+				$status['msg'] = 'เกิดข้อผิดพลาดไม่สามารถลบ รายการนี้ได้';
+
+				echo json_encode($status);
+
+				exit();
+
+		}
+
+	}else{
+
+				$status['status'] = "0";
+
+				$status['msg'] = 'ไม่พบบีญชีใช้งานนี้';
+
+				echo json_encode($status);
+
+				exit();
+
+	}
+
+}
+
+if(isset($_POST['settopup'])){
+
+	$tmid = trim($_POST['tmid']);
+
+	if($tmid){
+
+		
+
+		$reset = $conn->query("update tmtopup set used = '0'");
+
+			$res = $conn->query("update tmtopup set used = '1' where id = '$tmid'");
+
+			if($res){
+
+				$status['status'] = "1";
+
+				$status['msg'] = "บันทึกการเปิดใช้งานเรียบร้อย";
+
+				echo json_encode($status);
+
+				exit();
+
+			}else{
+
+				$status['status'] = "0";
+
+				$status['msg'] = "เกิดข้อผิดพลาด ไม่สามารถรีเช็ทการตั้งค่าได้";
+
+				echo json_encode($status);
+
+				exit();				
+
+			}
+
+
+
+	}else{
+
+			$status['status'] = "0";
+
+			$status['msg'] = "เกิดข้อผิดพลาด ไม่สามารถตั้งค่าได้";
+
+			echo json_encode($status);
+
+			exit();
+
+	}
+
+}
+
+
+
+if(isset($_POST['addsharework'])){
+
+	$gamesid = trim($_POST['gamesid']);
+
+
+	if(empty($gamesid)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "เกิดข้อผิดพลาด";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+		
+		$sql = "select * from sharework where gamesid = '".$gamesid."' and date = '".$timework."' and status = 'y' ";
+		$result = $conn->query($sql);
+		
+		if ($result->num_rows == 0) {
+		$conn->query("UPDATE sharework SET status='n' WHERE gamesid = '".$gamesid."' ");
+		$rowid = $conn->query("INSERT INTO sharework (gamesid, persoid ,added ,date,status) VALUES ('".$gamesid."', '".$_COOKIE['PID']."','".$added."','".$timework."','y')");
+		
+		for ($i = 1; $i <= count($_COOKIE['PSW']); $i++) {
+    	//$gameid[] = $_COOKIE['PSW'][$i];
+		setcookie('PSW[gameid]', $_COOKIE['PSW']['gameid'][$i] ,time()+(3600*8),"/");
+		}
+
+		//$gameid[] = $gamesid;
+		
+		//$_SESSION['SW'][] = $gamesid;
+		//$gameid;
+		
+		setcookie('PSW[gameid]', $gamesid ,time()+(3600*8),"/");
+		
+		
+		}else{
+		$rowid='';	
+		}
+
+		if($rowid){
+
+			$status['status'] = "1";
+
+			$status['msg'] = "เลือกเรียบร้อย";
+
+			echo json_encode($status);
+
+			exit();
+
+		}else{
+
+			$status['status'] = "0";
+
+			$status['msg'] = "มีผู้เลือกแล้วบันทึกข้อมูลไม่ได้";
+
+			echo json_encode($status);
+
+			exit();
+
+		}
+}
+
+
+if(isset($_POST['endsharework'])){
+
+	$gamesid = trim($_POST['gamesid']);
+
+
+	if(empty($gamesid)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "เกิดข้อผิดพลาด";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+		$rowid = $conn->query("UPDATE sharework SET status='n' where gamesid='".$gamesid."' and persoid='".$_COOKIE['PID']."' and date='".$timework."' ");
+		setcookie('PSW', '');
+		unset($_COOKIE['PSW']);
+		setcookie( 'PSW', null, -1, '/');
+
+		if($rowid){
+
+			$status['status'] = "1";
+
+			$status['msg'] = "ยกเลิกเรียบร้อย";
+
+			echo json_encode($status);
+
+			exit();
+
+		}else{
+
+			$status['status'] = "0";
+
+			$status['msg'] = "ไม่สามารถยกเลิกได้";
+
+			echo json_encode($status);
+
+			exit();
+
+		}
+
+}
+
+if(isset($_POST['openaccount'])){
+
+	$name = $_POST['name'];
+
+	$phone = $_POST['phone'];
+
+	$username = $_POST['username'];
+
+	$password = $_POST['password'];
+
+	$bankname = $_POST['bankname'];
+
+	$banknumber = $_POST['banknumber'];
+
+	$added = time();
+
+	
+
+	
+
+	
+	$sql3 = "select * from member where phone = '$phone' or banknumber = '$banknumber'";
+	$result3 = $conn->query($sql3);
+	$ck = $result3->fetch_assoc();
+
+	if($ck){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "เบอร์โทร หรือ เลขบัญชีธนาคารนี้ มีในระบบแล้ว";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+	
+
+	if(strlen($phone) != 10 or (strlen($banknumber) > 12 and strlen($banknumber) < 10) or !preg_match('/^[0-9]+$/', $phone) or !preg_match('/^[0-9]+$/', $banknumber)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "เบอร์ โทรศัพท์ หรือ เลข บัญชีธนาคาร ต้องระบุเป็นตัวเลข 10 หลัก เท่านั้น";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+	
+
+	if(empty($name)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "โปรดระบุชื่อบัญชี";
+
+		echo json_encode($status);
+
+		exit();
+
+	}
+
+	
+
+	if(empty($username) or empty($password)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "โปรดระบุ ชื่อบัญชีเข้าใช้งาน หรือ รหัสผ่าน";
+
+		echo json_encode($status);
+
+		exit();		
+
+	}
+
+	
+
+	if(empty($bankname)){
+
+		$status['status'] = "0";
+
+		$status['msg'] = "โปรดเลือกธนาคารของลูกค้า";
+
+		echo json_encode($status);
+
+		exit();		
+
+	}
+
+	
+
+	$rowid = $conn->query("INSERT INTO member (name,username,password,phone,bankname,banknumber,added) VALUES ('$name','$username','".MD5($password)."', '$phone', '$bankname', '$banknumber','$added')");
+
+	if($rowid){
+
+		$status['status'] = "1";
+
+		$status['msg'] = "เพิ่มบัญชีลูกค้าใหม่เรียบร้อย";
+
+		echo json_encode($status);
+
+		exit();
+
+	}	
+
+}
+?>

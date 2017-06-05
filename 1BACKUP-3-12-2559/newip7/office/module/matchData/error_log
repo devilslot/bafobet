@@ -1,0 +1,1 @@
+[10-Jun-2016 15:42:20 Asia/Bangkok] PHP Warning:  mysql_fetch_assoc() expects parameter 1 to be resource, boolean given in /home/bafobet/public_html/office/module/matchData/matchData.class.php on line 112

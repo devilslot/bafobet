@@ -1,0 +1,21 @@
+RewriteEngine On
+RewriteBase /
+
+
+
+
+Options +Indexes
+RewriteRule ^hilight/([^/]*)\.html$ /showhilight.php?code=$1 [L]
+RewriteRule ^newspaper/([^/]*)\.html$ /shownewspaper.php?code=$1 [L]
+RewriteRule ^pantip/([^/]*)\.html$ /showpantip.php?code=$1 [L]
+RewriteRule ^lotto/([^/]*)\.html$ /showlotto.php?code=$1 [L]
+
+RewriteRule ^api/(.*)-(.*).html$		api/api.inc.php?mode=$1&loader=$2
+RewriteRule ^api/(.*).html$			api/api.inc.php?mode=$1
+RewriteRule ^office/lock-(.*).html$		office/app.lock.php?user=$1
+RewriteRule ^office/(.*).html$			office/app.php?mod=$1
+
+
+RewriteCond %{HTTP_HOST} ^bafobet.com [NC]
+RewriteRule ^(.*)$ http://www.bafobet.com/$1 [L,R=301]
+

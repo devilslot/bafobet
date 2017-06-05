@@ -1,0 +1,11 @@
+/*================================================*\
+*  Author : Attaphon Wongbuatong
+*  Created Date : 24/01/2015 09:09
+*  Module : Style
+*  Description : Backoffice Style sheet
+*  Involve People : MangEak
+*  Last Updated : 24/01/2015 09:09
+\*================================================*/
+@charset "utf-8";
+#ModalIcon .btn-link{min-width:180px; text-align:left; color:#666666;}
+.fa-hover{cursor:pointer;}

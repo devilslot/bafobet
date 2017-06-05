@@ -1,0 +1,374 @@
+    <div style="width:1020px; float:right; min-height:700px; ">
+      <table width="1000" border="0" align="center" cellspacing="1" bgcolor="#202020" style="margin-top:5px;">
+        <tr>
+          <td height="42" background="bg-menu1.jpg" bgcolor="#004000"><div align="center" class="style5">
+            <div align="left">&nbsp;&nbsp;<span class="style24">สรุป</span>การทายผล วันนี้</div>
+          </div></td>
+        </tr>
+        <tr>
+          <td height="35" bgcolor="#000000">
+            
+            SELECT
+            memberID,matchID
+            FROM
+            playgame
+            WHERE matchID!='GETPOINT' AND
+            UNIX_TIMESTAMP(date_create) >= '1477544400'
+			AND  UNIX_TIMESTAMP(date_create) <= '1477630799' AND matchID!='GETPOINT'
+			
+            GROUP BY 
+            memberID
+            ORDER BY
+            code
+            DESC
+            ;            <table width="1000" border="0" align="center" cellspacing="1" bgcolor="#555555" style="margin-top:5px;">
+              <tr>
+                <td width="150" rowspan="6" valign="top"  bgcolor="#555555"><div class="style54" style="width:140px; max-height:140px; margin:10px auto; border:solid 3px #CCCCCC; overflow:hidden;">
+                  <img src="http://www.bafobet.com/pro-pic.jpg" width="140" />                </div>
+				
+                <div class="style54" style="width:140px; height:40px; line-height:40px; background: #222222; font-size:16px; margin:0 auto 10px auto;">
+                  <div align="center"><strong><a href="viewmemberplay.php?refID=180">เล่าปี่</a></strong></div>
+                </div></td>
+                 <td width="850"  bgcolor="#555555" colspan="6" valign="top">
+                   <table width="840" style="hight:100px; margin:5px;">
+					  <!--<tr>
+						<td height="42" colspan="9" bgcolor="#004000"><div align="center" class="style5">
+            <div align="left">&nbsp;&nbsp;<span class="style24">สรุป</span>การทายผล</div>
+          </div></td>
+					 </tr>-->
+                        <tr>
+                          <td  width="10%" height="40" bgcolor="#000000"><div align="center" class="style27"><span class="style28">เวลา</span></div></td>
+                          <td  width="15%" bgcolor="#000000"><div align="center" class="style27"><span class="style28">ลีก</span></div></td>
+                          <td  width="20%" bgcolor="#000000"><div align="center" class="style27"><span class="style28">ทีมเจ้าบ้าน</span></div></td>
+                          <td  width="10%" bgcolor="#000000"><div align="center" class="style27"><span class="style28">ทาย</span></div></td>
+                          <td  width="20%" bgcolor="#000000"><div align="center" class="style27"><span class="style28">ทีมเยือน</span></div></td>
+                          <td  width="10%" bgcolor="#000000"><div align="center" class="style27"><span class="style28">Point/Rank</span></div></td>
+                          <td  width="10%" bgcolor="#000000"><div align="center" class="style27"><span class="style28">สถานะ</span></div></td>
+                          <td  width="10%" bgcolor="#000000"><div align="center" class="style27"><span class="style28">ได้/เสีย</span></div></td>
+                          
+                        </tr>
+                                                  <tr>
+                            <td height="35" bgcolor="#1D1D1D"><div align="center"><span class="style18">19:45</span></div></td>
+                            <td bgcolor="c481af"><div align="center" class="style28" style="cursor:pointer; color:#000000;" title="Egypt: Premier League">Egy PrL</div></td>
+                            <td bgcolor="#1D1D1D"><div align="center" ><span class="style18">
+                                                            El Ismaily<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">ALWAY</div>
+                            </div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style25">
+                                                            Misr Elmaqasah<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#282828"><div align="center"><span class="style18">20:05</span></div></td>
+                            <td bgcolor="af85f9"><div align="center" class="style28" style="cursor:pointer; color:#000000;" title="United Arab Emirates: Uae League">Uni ArEU</div></td>
+                            <td bgcolor="#282828"><div align="center" ><span class="style25">
+                                                            Al Dhafra<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">HOME</div>
+                            </div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style18">
+                                                            Ittihad Kalba<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#1D1D1D"><div align="center"><span class="style18">21:00</span></div></td>
+                            <td bgcolor="2764d6"><div align="center" class="style28" style="cursor:pointer; color:#FFFFFF;" title="Bulgaria: Bulgarian Cup">Bul BuC</div></td>
+                            <td bgcolor="#1D1D1D"><div align="center" ><span class="style18">
+                                                            Vereya<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">ALWAY</div>
+                            </div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style25">
+                                                            Pomorie<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#282828"><div align="center"><span class="style18">21:15</span></div></td>
+                            <td bgcolor="2cc3ff"><div align="center" class="style28" style="cursor:pointer; color:#000000;" title="Greece: Greek Cup - Second Round">Gre GrC</div></td>
+                            <td bgcolor="#282828"><div align="center" ><span class="style25">
+                                                            Asteras Tripolis<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">HOME</div>
+                            </div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style18">
+                                                            Veria<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#1D1D1D"><div align="center"><span class="style18">22:00</span></div></td>
+                            <td bgcolor="be2ce9"><div align="center" class="style28" style="cursor:pointer; color:#000000;" title="Russia: Russian Cup">Rus RuC</div></td>
+                            <td bgcolor="#1D1D1D"><div align="center" ><span class="style25">
+                                                            FK Krylya Sovetov Samara<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">HOME</div>
+                            </div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">
+                                                            Lokomotiv Moscow<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#282828"><div align="center"><span class="style18">22:00</span></div></td>
+                            <td bgcolor="c481af"><div align="center" class="style28" style="cursor:pointer; color:#000000;" title="Egypt: Premier League">Egy PrL</div></td>
+                            <td bgcolor="#282828"><div align="center" ><span class="style18">
+                                                            El Masry<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">ALWAY</div>
+                            </div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style25">
+                                                            Enppi<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#1D1D1D"><div align="center"><span class="style18">22:45</span></div></td>
+                            <td bgcolor="739c1b"><div align="center" class="style28" style="cursor:pointer; color:#FFFFFF;" title="Romania: Romanian Cup">Rom RoC</div></td>
+                            <td bgcolor="#1D1D1D"><div align="center" ><span class="style25">
+                                                            Balotesti<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">HOME</div>
+                            </div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">
+                                                            FC Viitorul<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#282828"><div align="center"><span class="style18">23:00</span></div></td>
+                            <td bgcolor="be2ce9"><div align="center" class="style28" style="cursor:pointer; color:#000000;" title="Russia: Russian Cup">Rus RuC</div></td>
+                            <td bgcolor="#282828"><div align="center" ><span class="style25">
+                                                            Krasnodar<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">HOME</div>
+                            </div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style18">
+                                                            Orenburg<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#1D1D1D"><div align="center"><span class="style18">23:00</span></div></td>
+                            <td bgcolor="af85f9"><div align="center" class="style28" style="cursor:pointer; color:#000000;" title="United Arab Emirates: Uae League">Uni ArEU</div></td>
+                            <td bgcolor="#1D1D1D"><div align="center" ><span class="style25">
+                                                            Al Jazira<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">HOME</div>
+                            </div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">
+                                                            Bani Yas<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#282828"><div align="center"><span class="style18">23:00</span></div></td>
+                            <td bgcolor="af85f9"><div align="center" class="style28" style="cursor:pointer; color:#000000;" title="United Arab Emirates: Uae League">Uni ArEU</div></td>
+                            <td bgcolor="#282828"><div align="center" ><span class="style18">
+                                                            Al Wasl<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">ALWAY</div>
+                            </div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style25">
+                                                            Al Sharjah<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#1D1D1D"><div align="center"><span class="style18">23:30</span></div></td>
+                            <td bgcolor="6262a2"><div align="center" class="style28" style="cursor:pointer; color:#FFFFFF;" title="Netherlands: Knvb Beker">Net KnB</div></td>
+                            <td bgcolor="#1D1D1D"><div align="center" ><span class="style18">
+                                                            Zwolle<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">ALWAY</div>
+                            </div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style25">
+                                                            Venlo<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#282828"><div align="center"><span class="style18">00:45</span></div></td>
+                            <td bgcolor="199248"><div align="center" class="style28" style="cursor:pointer; color:#FFFFFF;" title="Denmark: Landspokal Cup">Den LaC</div></td>
+                            <td bgcolor="#282828"><div align="center" ><span class="style25">
+                                                            F. Amager<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">HOME</div>
+                            </div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style18">
+                                                            Midtjylland<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#1D1D1D"><div align="center"><span class="style18">01:45</span></div></td>
+                            <td bgcolor="af872f"><div align="center" class="style28" style="cursor:pointer; color:#FFFFFF;" title="Italy: Serie A">Ita SeA</div></td>
+                            <td bgcolor="#1D1D1D"><div align="center" ><span class="style25">
+                                                            Palermo<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">HOME</div>
+                            </div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">
+                                                            Udinese<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#282828"><div align="center"><span class="style18">01:45</span></div></td>
+                            <td bgcolor="6262a2"><div align="center" class="style28" style="cursor:pointer; color:#FFFFFF;" title="Netherlands: Knvb Beker">Net KnB</div></td>
+                            <td bgcolor="#282828"><div align="center" ><span class="style18">
+                                                            Eindhoven FC<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">ALWAY</div>
+                            </div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style25">
+                                                            Heerenveen<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#282828"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#282828"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                                    <tr>
+                            <td height="35" bgcolor="#1D1D1D"><div align="center"><span class="style18">05:30</span></div></td>
+                            <td bgcolor="bd411d"><div align="center" class="style28" style="cursor:pointer; color:#FFFFFF;" title="Brazil: Série A">Bra S</div></td>
+                            <td bgcolor="#1D1D1D"><div align="center" ><span class="style25">
+                                                            Sport Recife<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div class="style20" style="width:80%; margin:auto; padding:5px; background: #333333;">
+                              
+                              <div align="center" class="style25">HOME</div>
+                            </div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">
+                                                            Ponte Preta<br/>( <font color="#B1FB17">?</font> )
+                                                          </span></div></td>
+                            <td bgcolor="#1D1D1D"><div align="center"><span class="style18">1000</span></div></td>
+                            
+							
+                                                        
+                            <td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">รอแข่ง</font></div></td>
+                          	<td bgcolor="#1D1D1D"><div align="center" class="style25"><font color="#ffffff">0.00</font></div></td>
+                            
+                          </tr>
+                                            </table>
+                    
+					
+						
+              </table>
+                <br />
+                
+            </td>
+          </tr>
+        </table>  </div>
